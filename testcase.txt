@@ -1,0 +1,138 @@
+# ==============================================================================
+# Relational Algebra CLI Test Cases
+# ==============================================================================
+# IMPORTANT:
+# Run the python script (e.g., python ra_homework.py) first.
+# Then, at the "RA>" prompt, enter EACH command below ONE AT A TIME.
+# Press Enter after each command and wait for it to complete before the next.
+# DO NOT paste this entire block into the terminal at once.
+# DO NOT include the '#' comments when entering commands.
+# ==============================================================================
+
+# --- Phase 1: Setup and Basic CLI Functions ---
+
+# 1. Test: Help Command
+help
+
+# 2. Test: Load Data (Success)
+load students.csv students
+load enrollment.csv enroll
+load courses.csv courses
+load athletes.csv athletes
+load core_cs.csv core_cs
+
+# 3. Test: Load Data (Errors)
+load non_existent.csv fake
+load students.csv invalid-table-name
+load students.csv
+
+# 4. Test: Show Command (List & Errors)
+show
+show non_existent_table
+show schema
+
+# 5. Test: Show Schema (Success & Error)
+show schema students
+show schema non_existent_table
+
+# 6. Test: Show Table Content (Success & Error)
+show students
+show core_cs
+
+# --- Phase 2: Basic Operators ---
+
+# 7. Test: Select (σ)
+select students "Major == 'CS'" cs_students
+show cs_students
+select students "Age > 20 and Major != 'CS'" older_non_cs
+show older_non_cs
+select students "Name == 'NonExistentName'" empty_select
+show empty_select
+select students "Invalid Query @#$" select_syntax_err
+select non_existent "Age > 0" select_missing_err
+select students "Age > 0"
+
+# 8. Test: Project (π)
+project students Name,Major student_names_majors
+show student_names_majors
+project enroll StudentID unique_enroll_students
+show unique_enroll_students
+project students NonExistentCol,Name proj_err
+project non_existent Name proj_err2
+
+# 9. Test: Rename (ρ)
+rename students StudentID:SID,Name:StudentName students_renamed
+show students_renamed
+rename students Name:Major rename_conflict_real_err
+rename students OldNonExistent:NewName rename_err
+rename students_renamed SID:StudentID,StudentName:Name students_back
+show students_back
+
+# 10. Test: Cartesian Product (×)
+cp core_cs athletes cp_result
+show cp_result
+cp students non_existent cp_err
+
+# 11. Test: Union (∪)
+union students athletes all_people
+show all_people
+union students enroll union_err
+
+# 12. Test: Difference (-)
+diff students athletes students_only
+show students_only
+diff athletes students athletes_only
+show athletes_only
+diff students students empty_diff
+show empty_diff
+diff students enroll diff_err
+
+# --- Phase 3: Additional Operators ---
+
+# 13. Test: Intersection (∩)
+intersect students athletes student_athletes
+show student_athletes
+intersect students students_only no_common
+show no_common
+intersect students enroll intersect_err
+
+# 14. Test: Natural Join (⨝)
+join students enroll student_enroll_data
+show student_enroll_data
+join student_enroll_data courses full_student_course_info
+show full_student_course_info
+join students courses student_course_cp
+show student_course_cp
+
+# 15. Test: Division (÷)
+project enroll StudentID,CourseID enroll_pairs
+show enroll_pairs
+divide enroll_pairs core_cs students_completed_core
+show students_completed_core
+project courses CourseID,CourseID demanding_cs_math_temp # Create temp table
+select demanding_cs_math_temp "CourseID == 'CS101' or CourseID == 'MATH201'" demanding_cs_math # Select specific courses
+show demanding_cs_math
+divide enroll_pairs demanding_cs_math students_completed_cs_math
+show students_completed_cs_math
+project courses CourseID all_courses
+show all_courses
+divide enroll_pairs all_courses students_completed_all
+show students_completed_all
+divide enroll enroll_pairs div_schema_err
+project courses CourseID,Credits course_credits
+show course_credits
+divide enroll_pairs course_credits div_schema_err2
+load students.csv empty_table
+select empty_table "1 == 0" empty_table
+show empty_table
+divide enroll_pairs empty_table div_empty_divisor_err
+
+# --- Phase 4: Cleanup ---
+
+# 16. Test: Quit/Exit
+quit
+# or use: exit
+
+# ==============================================================================
+# End of Test Cases
+# ==============================================================================
